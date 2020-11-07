@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Station
   attr_accessor :trains, :name, :type
 
@@ -35,6 +37,7 @@ end
 
 class Train
   attr_accessor :name, :type, :stations, :route, :current_speed
+  attr_reader :vagons, :current_station
 
   def initialize(name, type, vagons = 0)
     @name = name
@@ -45,16 +48,12 @@ class Train
 
   def faster(speed)
     @current_speed += speed
-    @current_speed
   end
 
   def slower(speed)
     @current_speed -= speed
     @current_speed = 0 if @current_speed <= 0
-    @current_speed
   end
-
-  attr_reader :vagons, :current_station
 
   def add_vagon
     @vagons += 1 if @current_speed.zero?
@@ -64,14 +63,10 @@ class Train
     @vagons -= 1 if @current_speed.zero? && @vagons >= 1
   end
 
-  def speed
-    @current_speed
-  end
-
   def set_route(route)
     @route = route
     @current_station = route.stations[0]
-    @route.stations[0].trains << self
+    @current_station.trains << self
   end
 
   def next_station
@@ -91,20 +86,18 @@ class Train
   def forward
     return unless next_station
 
-    i = @route.stations.index(@current_station)
-    @current_station = @route.stations[i += 1]
-    @route.stations[i].trains << self
-    @route.stations[i - 1].trains.delete(self)
+    next_station.trains << self
+    @current_station = next_station
+    previous_station.trains.delete(self)
     @current_station
   end
 
   def back
     return unless previous_station
 
-    i = @route.stations.index(@current_station)
-    @current_station = @route.stations[i -= 1]
-    @route.stations[i].trains << self
-    @route.stations[i + 1].trains.delete(self)
+    previous_station.trains << self
+    @current_station = previous_station
+    next_station.trains.delete(self)
     @current_station
   end
 end

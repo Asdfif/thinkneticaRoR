@@ -8,7 +8,7 @@ class Train
   def initialize(name)
     @name = name
     @type = type
-    @wagons = {}
+    @wagons = []
     @current_speed = 0
   end
 
@@ -24,16 +24,19 @@ class Train
   # done
   def hook_wagon(wagon)
     if wagon && @current_speed.zero? && wagon.type == @type && wagon.train.nil? && @wagons.include?(wagon) == false
-      @wagons.merge!({ wagon.number => wagon })
+      #@wagons.merge!({ wagon.number => wagon })
+      @wagons << wagon
       wagon.train = self
     end
   end
 
   # done
-  def unhook_wagon(wagon)
-    if wagon && @current_speed.zero?
-      @wagons.delete(wagon.number)
+  def unhook_wagon
+    if @current_speed.zero? && @wagons != []
+      #@wagons.delete(wagon.number)
+      wagon = @wagons.last
       wagon.train = nil
+      @wagons.delete_at(-1)
     end
   end
 

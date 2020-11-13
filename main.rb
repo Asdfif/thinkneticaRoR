@@ -370,14 +370,13 @@ class Interface
     end
   end
 
-  def wagon_hook_or_unhook(choice)
-    puts 'Введите номер вагона'
+  def wagon_hook_or_unhook(choice, train)
     if choice == '2'
+    	puts 'Введите номер вагона'
       wagon = @wagons[gets.chomp]
       train.hook_wagon(wagon)
     else
-      wagon = train.wagons[gets.chomp]
-      train.unhook_wagon(wagon)
+      train.unhook_wagon
     end
   end
 
@@ -391,9 +390,9 @@ class Interface
         when '1'
           route_selection(train)
         when '2'
-          wagon_hook_or_unhook(choice)
+          wagon_hook_or_unhook(choice, train)
         when '3'
-          wagon_hook_or_unhook(choice)
+          wagon_hook_or_unhook(choice, train)
         when '4'
           train.forward
         when '5'

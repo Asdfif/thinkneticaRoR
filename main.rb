@@ -16,18 +16,8 @@ class Interface
     @trains = {}
     @wagons = {}
   end
-
-  puts 'Давно тебя не было в Железных Дорогах!'
-
-  def menu_list
-    puts ''
-    puts 'ГЛАВНОЕ МЕНЮ'
-    puts '1 - Создать объект (Станцию, Маршрут, Поезд или Вагон)' #+
-    puts '2 - Управление объектом'
-    puts '3 - Список станций'
-    puts '4 - info'
-    puts '5 - Выход из программы'
-  end
+  
+  public 
 
   def menu
     menu_list
@@ -48,6 +38,18 @@ class Interface
         return menu
       end
     end
+  end
+
+  private
+
+  def menu_list
+    puts ''
+    puts 'ГЛАВНОЕ МЕНЮ'
+    puts '1 - Создать объект (Станцию, Маршрут, Поезд или Вагон)' #+
+    puts '2 - Управление объектом'
+    puts '3 - Список станций'
+    puts '4 - info'
+    puts '5 - Выход из программы'
   end
 
   def stations_list
@@ -418,9 +420,4 @@ class Interface
     end
   end
 
-  # Все работает, нужен рефракторинг
-  # + private/public
 end
-
-interface = Interface.new
-interface.menu

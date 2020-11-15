@@ -11,7 +11,6 @@ class Wagon
 
   def initialize(number)
     @number = number
-    set_company
   end
 
   def info

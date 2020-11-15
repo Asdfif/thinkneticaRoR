@@ -209,16 +209,21 @@ class Interface
     end
     if type == '1'
       trains.merge!({ name => CargoTrain.new(name) })
-      company(name)
+      company(name, 'train')
     else
       trains.merge!({ name => PassengerTrain.new(name) })
-      company(name)
+      company(name, 'train')
     end
   end
 
-  def company(name)
+  def company(name, type)
     puts 'Введите название компании'
-    trains[name].set_company
+    case 
+    when type == 'train'
+      trains[name].set_company
+    when type == 'wagon'
+      wagons[name].set_company
+    end
   end
 
   def create_wagon(type)
@@ -230,8 +235,10 @@ class Interface
     end
     if type == '1'
       wagons.merge!({ number => CargoWagon.new(number) })
+      company(number, 'wagon')
     else
       wagons.merge!({ number => PassengerWagon.new(number) })
+      company(number, 'wagon')
     end
   end
 

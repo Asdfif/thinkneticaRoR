@@ -19,7 +19,6 @@ class Train
     @wagons = []
     @current_speed = 0
     @@trains.merge!({ name => self })
-    set_company
     register_instance
   end
 

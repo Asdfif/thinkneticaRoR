@@ -2,7 +2,6 @@
 
 module CompanyName
   def set_company
-    puts 'Введите название компании'
     @company = gets.chomp
   end
 

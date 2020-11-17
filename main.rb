@@ -11,7 +11,6 @@ require_relative 'wagon_cargo'
 require './modules/instance-counter'
 require './modules/company-name'
 
-
 class Interface
   attr_reader :trains, :stations, :routes, :wagons
 
@@ -20,6 +19,13 @@ class Interface
     @routes = {}
     @trains = {}
     @wagons = {}
+  end
+
+  def valid?(object)
+    object.validate!
+    true
+  rescue StandardError
+    false
   end
 
   def menu
@@ -117,13 +123,18 @@ class Interface
   end
 
   def create_a_station
-    puts 'Введите название станции'
-    name = gets.chomp
-    while stations.keys.include?(name)
-      puts 'Станция с таким именем уже существует'
+    begin
+      puts 'Введите название станции'
       name = gets.chomp
+      while stations.keys.include?(name)
+        puts 'Станция с таким именем уже существует'
+        name = gets.chomp
+      end
+      stations.merge!({ name => Station.new(name) })
+    rescue RuntimeError
+      puts 'Название станции должно состоять только из латинских букв и начинаться с заглавной'
+      retry
     end
-    stations.merge!({ name => Station.new(name) })
     create_an_object
   end
 
@@ -165,13 +176,18 @@ class Interface
     terminal_stations = create_last_station_of_route
     station_one = terminal_stations[0]
     station_two = terminal_stations[1]
-    puts 'Введите название маршрута'
-    new_route_name = gets.chomp
-    if @routes.include?(new_route_name)
-      puts 'Маршрут с таким названием существует'
-      nil
-    else
-      @routes.merge!({ new_route_name => Route.new(station_one, station_two) })
+    begin
+      puts 'Введите название маршрута'
+      new_route_name = gets.chomp
+      if @routes.include?(new_route_name)
+        puts 'Маршрут с таким названием существует'
+        nil
+      else
+        @routes.merge!({ new_route_name => Route.new(station_one, station_two, new_route_name) })
+      end
+    rescue RuntimeError
+      puts 'Название маршрута должно состоять только из латинских букв и начинаться с заглавной'
+      retry
     end
   end
 
@@ -201,45 +217,60 @@ class Interface
   end
 
   def create_train(type)
-    puts 'Введите название поезда'
-    name = gets.chomp
-    while trains.keys.include?(name)
-      puts 'Поезд с таким названием уже существует'
+    begin
+      puts 'Введите название поезда'
       name = gets.chomp
+      while trains.keys.include?(name)
+        puts 'Поезд с таким названием уже существует'
+        name = gets.chomp
+      end
+      if type == '1'
+        trains.merge!({ name => CargoTrain.new(name) })
+        company(name, :train)
+      else
+        trains.merge!({ name => PassengerTrain.new(name) })
+        company(name, :train)
+      end
+    rescue RuntimeError
+      puts 'Неверно указан номер поезда. Допустимый формат: три буквы или цифры в любом порядке, необязательный дефис (может быть, а может нет) и еще 2 буквы или цифры после дефиса.'
+      retry
     end
-    if type == '1'
-      trains.merge!({ name => CargoTrain.new(name) })
-      company(name, 'train')
-    else
-      trains.merge!({ name => PassengerTrain.new(name) })
-      company(name, 'train')
-    end
+    puts "\n Создан поезд №#{name} компании '#{trains[name].company}'"
   end
 
   def company(name, type)
     puts 'Введите название компании'
-    case 
-    when type == 'train'
+    case type
+    when :train
       trains[name].set_company
-    when type == 'wagon'
+    when :wagon
       wagons[name].set_company
     end
+  rescue RuntimeError
+    puts 'Название компании должно состоять только из латинских букв и начинаться с заглавной'
+    retry
   end
 
   def create_wagon(type)
-    puts 'Введите номер вагона'
-    number = gets.chomp
-    while wagons.keys.include?(number)
-      puts 'Вагон с таким номером уже существует'
+    begin
+      puts 'Введите номер вагона'
       number = gets.chomp
+      while wagons.keys.include?(number)
+        puts 'Вагон с таким номером уже существует'
+        number = gets.chomp
+      end
+      if type == '1'
+        wagons.merge!({ number => CargoWagon.new(number) })
+        company(number, :wagon)
+      else
+        wagons.merge!({ number => PassengerWagon.new(number) })
+        company(number, :wagon)
+      end
+    rescue RuntimeError
+      puts 'Неверно указан номер вагона. Допустимый формат: две цифры'
+      retry
     end
-    if type == '1'
-      wagons.merge!({ number => CargoWagon.new(number) })
-      company(number, 'wagon')
-    else
-      wagons.merge!({ number => PassengerWagon.new(number) })
-      company(number, 'wagon')
-    end
+    puts puts "\n Создан вагон №#{number} компании '#{wagons[number].company}'"
   end
 
   def routes_is_empty?

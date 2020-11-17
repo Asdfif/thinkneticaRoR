@@ -1,12 +1,14 @@
 # frozen_string_literal: true
+
 require_relative 'main'
 require './modules/instance-counter'
 require './modules/company-name'
 
 class Train
-
   attr_accessor :name, :current_speed, :trains
   attr_reader :wagons, :current_station, :type, :stations, :route
+
+  TRAIN_PATTERN = /([a-z]{3}|\d{3})+-*+([a-z]{2}|\d{2})/i.freeze
 
   include InstanceCounter
   include CompanyName
@@ -15,11 +17,16 @@ class Train
 
   def initialize(name)
     @name = name
+    validate!
     @type = type
     @wagons = []
     @current_speed = 0
     @@trains.merge!({ name => self })
     register_instance
+  end
+
+  def validate!
+    raise if @name !~ TRAIN_PATTERN
   end
 
   def faster(speed)

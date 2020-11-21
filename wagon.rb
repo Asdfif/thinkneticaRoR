@@ -18,17 +18,8 @@ class Wagon
     @free_volume = volume
     @used_volume = 0
     validate!
-    # volume_validate!
   end
 
-  # def volume_validate!
-  #   case @type
-  #   when :cargo
-  #     raise if @volume.class != Float
-  #   when :passenger
-  #     raise if @volume.class != Integer
-  #   end
-  # end
   def validate!
     raise if @number !~ WAGON_PATTERN
   end

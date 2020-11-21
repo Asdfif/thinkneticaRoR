@@ -25,6 +25,10 @@ class Train
     register_instance
   end
 
+  def operation_with_wagons(&block)
+    @wagons.each(&block)
+  end
+
   def validate!
     raise if @name !~ TRAIN_PATTERN
   end

@@ -232,7 +232,7 @@ class Interface
         company(name, :train)
       end
     rescue RuntimeError
-      puts 'Неверно указан номер поезда. Допустимый формат: три буквы или цифры в любом порядке, необязательный дефис (может быть, а может нет) и еще 2 буквы или цифры после дефиса.'
+      puts 'Неверно указан номер поезда. Допустимый формат: три буквы или цифры в любом порядке, необязательный дефис (может быть, а может нет) и еще 2 буквы или цифры после дефиса. '
       retry
     end
     puts "\n Создан поезд №#{name} компании '#{trains[name].company}'"
@@ -251,6 +251,52 @@ class Interface
     retry
   end
 
+  def volume_valid!(volume)
+    raise if volume.zero?
+  end
+
+  def volume_of_wagon(type)
+    begin
+      if type == '1'
+        puts 'Введите объем грузового вагона'
+        volume = gets.chomp.to_f
+        volume_valid!(volume)
+      else
+        puts 'Введите количество мест пассажирского вагона'
+        volume = gets.chomp.to_i
+        volume_valid!(volume)
+      end
+    rescue StandardError
+      puts 'Неверно указан  объем вагона (целое/дробное число для грузового, и целове - для пассажирского)'
+      retry
+    end
+    volume
+  end
+
+  def select_a_wagon
+    number = gets.chomp
+    if @wagons.key?(number)
+      @wagons[number]
+    else
+      false
+    end
+  end
+
+  def take_volume(wagon)
+    if wagon.type == :cargo
+      puts 'Введтие количество занимаемого объема'
+      volume = gets.chomp.to_f
+    else
+      volume = 1
+    end
+    if wagon.free_volume >= volume
+      wagon.free_volume -= volume
+      wagon.used_volume += volume
+    else
+      puts 'Количество занимаемого объема не должно быть меньше свободного'
+    end
+  end
+
   def create_wagon(type)
     begin
       puts 'Введите номер вагона'
@@ -260,14 +306,16 @@ class Interface
         number = gets.chomp
       end
       if type == '1'
-        wagons.merge!({ number => CargoWagon.new(number) })
+        volume = volume_of_wagon(type)
+        wagons.merge!({ number => CargoWagon.new(number, volume) })
         company(number, :wagon)
       else
-        wagons.merge!({ number => PassengerWagon.new(number) })
+        volume = volume_of_wagon(type)
+        wagons.merge!({ number => PassengerWagon.new(number, volume) })
         company(number, :wagon)
       end
     rescue RuntimeError
-      puts 'Неверно указан номер вагона. Допустимый формат: две цифры'
+      puts 'Неверно указан номер вагона. Допустимый формат: две цифры.'
       retry
     end
     puts puts "\n Создан вагон №#{number} компании '#{wagons[number].company}'"
@@ -291,13 +339,23 @@ class Interface
     end
   end
 
+  def wagons_is_empty?
+    if @wagons.empty?
+      puts 'Сначала создайте вагон'
+      control_menu
+    else
+      wagon_menu
+    end
+  end
+
   def control_menu_list
     puts ''
     puts 'МЕНЮ УПРАВЛЕНИЯ ОБЪЕКТАМИ'
     puts '1 - Операции с маршрутом'
     puts '2 - Операции с поездом'
     puts '3 - Смотреть поезда на станции'
-    puts '4 - Вернуться в главное меню'
+    puts '4 - Операции с вагонами'
+    puts '5 - Вернуться в главное меню'
   end
 
   def control_menu
@@ -316,11 +374,48 @@ class Interface
           trains_on_station
         end
       when '4'
+        wagons_is_empty?
+      when '5'
         menu
         break
       else
         puts 'неопознанная команда'
       end
+    end
+  end
+
+  def wagon_menu_list(wagon)
+    puts ''
+    puts "ОПЕРАЦИИ С ВАГОНОМ  № #{@wagons.key(wagon)}"
+    puts '1 - Занять место/объем'
+    puts '2 - Показать количество занятых мест/объема'
+    puts '3 - Показать количество свободных мест/объема'
+    puts '4 - Назад в меню управления объектами'
+  end
+
+  def wagon_menu
+    puts 'Введите номер вагона'
+    wagon = select_a_wagon
+    if wagon
+      loop do
+        wagon_menu_list(wagon)
+        choice = gets.chomp
+        case choice
+        when '1'
+          take_volume(wagon)
+        when '2'
+          puts wagon.used_volume
+        when '3'
+          puts wagon.free_volume
+        when '4'
+          control_menu
+        else
+          puts 'неопознанная команда'
+        end
+      end
+    else
+      puts 'вагона с такими номером не существует'
+      control_menu
     end
   end
 

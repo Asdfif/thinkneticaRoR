@@ -20,6 +20,10 @@ class Station
     register_instance
   end
 
+  def operation_with_trains(&block)
+    @trains.each(&block)
+  end
+
   def validate!
     raise if @name !~ STATION_PATTERN
   end

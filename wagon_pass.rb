@@ -6,7 +6,7 @@ require './modules/company-name'
 class PassengerWagon < Wagon
   attr_reader :type
 
-  def initialize(number)
+  def initialize(number, volume)
     super
     @type = :passenger
   end

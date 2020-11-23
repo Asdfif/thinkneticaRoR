@@ -318,7 +318,12 @@ class Interface
       puts 'Неверно указан номер вагона. Допустимый формат: две цифры.'
       retry
     end
-    puts puts "\n Создан вагон №#{number} компании '#{wagons[number].company}'"
+    puts "\n Создан вагон №#{number} компании '#{wagons[number].company}'"
+    if type == '1'
+      puts "Объем вагона #{volume}"
+    else
+      puts "Мест в вагоне #{volume}"
+    end
   end
 
   def routes_is_empty?
@@ -423,7 +428,15 @@ class Interface
     puts 'Введите название станции'
     station_name = gets.chomp
     station = @stations[station_name]
-    station.trains.each { |train| puts train.name }
+    station.operation_with_trains do |train|
+      puts "Номер поезда - #{train.name}"
+      if train.wagons.empty?
+        puts 'Прицепленных вагонов нет'
+      else
+        puts "Прицепленных ваногов - #{train.wagons.length}"
+        show_wagons(train)
+      end
+    end
     control_menu
   end
 
@@ -499,7 +512,8 @@ class Interface
     puts '3 - Отцепить вагон'
     puts '4 - Переместить поезд на следующую станцию'
     puts '5 - Переместить поезд на предыдущую станцию'
-    puts '6 - Вернуться в меню управления объектами'
+    puts '6 - Список вагонов у поезда'
+    puts '7 - Вернуться в меню управления объектами'
   end
 
   def route_selection(train)
@@ -541,6 +555,8 @@ class Interface
         when '5'
           train.back
         when '6'
+          show_wagons(train)
+        when '7'
           control_menu
         else
           puts 'неопознанная команда'
@@ -549,6 +565,22 @@ class Interface
     else
       puts 'поезда с такими именем не существует'
       control_menu
+    end
+  end
+
+  def show_wagons(train)
+    train.operation_with_wagons do |wagon|
+      puts "Номер вагона - #{wagon.number}"
+      case wagon.type
+      when :cargo
+        puts 'Тип вагона - Грузовой'
+        puts "Количество свободного места - #{wagon.free_volume}"
+        puts "Количество занятого места - #{wagon.used_volume}"
+      when :passenger
+        puts 'Тип вагона - Пассажирский'
+        puts "Количество свободных мест - #{wagon.free_volume}"
+        puts "Количество занятых мест - #{wagon.used_volume}"
+      end
     end
   end
 

@@ -6,7 +6,7 @@ require './modules/company-name'
 class Wagon
   WAGON_PATTERN = /^\d{2}$/.freeze
 
-  attr_accessor :free_volume, :used_volume, :volume
+  attr_accessor :free_volume, :used_volume, :volume, :train, :type, :number
 
   include CompanyName
 
@@ -27,8 +27,4 @@ class Wagon
   def info
     puts "Тип вагона: #{type}, Поезд вагона #{train}, Номер вагона: #{number}"
   end
-
-  protected
-
-  attr_accessor :type, :train, :number
 end

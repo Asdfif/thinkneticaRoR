@@ -21,6 +21,14 @@ class Wagon
     validate!
   end
 
+  def free_volume
+    @free_volume
+  end
+
+  def used_volume
+    @used_volume
+  end
+
   def validate!
     raise if @number !~ WAGON_PATTERN
   end

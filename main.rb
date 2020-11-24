@@ -292,8 +292,7 @@ class Interface
       volume = 1
     end
     if wagon.free_volume >= volume
-      wagon.free_volume -= volume
-      wagon.used_volume += volume
+      wagon.take_volume(volume)
     else
       puts 'Количество занимаемого объема не должно быть меньше свободного'
     end

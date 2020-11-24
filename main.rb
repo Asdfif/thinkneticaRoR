@@ -288,17 +288,13 @@ class Interface
     if wagon.type == :cargo
       puts 'Введтие количество занимаемого объема'
       volume = gets.chomp.to_f
-    else
-      volume = 1
-    end
-    if wagon.free_volume >= volume
       wagon.take_volume(volume)
     else
-      puts 'Количество занимаемого объема не должно быть меньше свободного'
+      wagon.take_volume
     end
   end
 
-  #При создании указывается количество мест или объем
+  # При создании указывается количество мест или объем
   def create_wagon(type)
     begin
       puts 'Введите номер вагона'

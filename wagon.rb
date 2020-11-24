@@ -14,20 +14,14 @@ class Wagon
 
   def initialize(number, volume)
     @number = number
-    #Атрибут мест/объема
+    # Атрибут мест/объема
     @volume = volume
     @free_volume = volume
     @used_volume = 0
     validate!
   end
 
-  def free_volume
-    @free_volume
-  end
-
-  def used_volume
-    @used_volume
-  end
+  attr_reader :free_volume, :used_volume
 
   def validate!
     raise if @number !~ WAGON_PATTERN

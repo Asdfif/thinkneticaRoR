@@ -12,10 +12,9 @@ class CargoWagon < Wagon
   end
 
   def take_volume(volume)
-  	if wagon.free_volume >= volume
+    if wagon.free_volume >= volume
       wagon.free_volume -= volume
       wagon.used_volume += volume
     end
   end
-
 end

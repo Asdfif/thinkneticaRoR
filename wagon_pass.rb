@@ -11,10 +11,10 @@ class PassengerWagon < Wagon
     @type = :passenger
   end
 
-  def take_volume(volume)
-  	if wagon.free_volume >= volume
-      wagon.free_volume -= volume
-      wagon.used_volume += volume
+  def take_volume
+    if wagon.free_volume >= 1
+      wagon.free_volume -= 1
+      wagon.used_volume += 1
     end
   end
 end

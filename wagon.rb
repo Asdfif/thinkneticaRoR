@@ -14,6 +14,7 @@ class Wagon
 
   def initialize(number, volume)
     @number = number
+    #Атрибут мест/объема
     @volume = volume
     @free_volume = volume
     @used_volume = 0
@@ -22,9 +23,5 @@ class Wagon
 
   def validate!
     raise if @number !~ WAGON_PATTERN
-  end
-
-  def info
-    puts "Тип вагона: #{type}, Поезд вагона #{train}, Номер вагона: #{number}"
   end
 end

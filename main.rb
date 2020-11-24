@@ -255,6 +255,7 @@ class Interface
     raise if volume.zero?
   end
 
+  # Указание максимального объема/мест при создании
   def volume_of_wagon(type)
     begin
       if type == '1'
@@ -282,6 +283,7 @@ class Interface
     end
   end
 
+  # Занять объем/место в вагоне
   def take_volume(wagon)
     if wagon.type == :cargo
       puts 'Введтие количество занимаемого объема'
@@ -297,6 +299,7 @@ class Interface
     end
   end
 
+  #При создании указывается количество мест или объем
   def create_wagon(type)
     begin
       puts 'Введите номер вагона'
@@ -424,6 +427,7 @@ class Interface
     end
   end
 
+  # Вывод списка поездов и прицепленных к ним вагонов на станции
   def trains_on_station
     puts 'Введите название станции'
     station_name = gets.chomp
@@ -568,6 +572,7 @@ class Interface
     end
   end
 
+  # Вывод списка вагонов у поезда
   def show_wagons(train)
     train.operation_with_wagons do |wagon|
       puts "Номер вагона - #{wagon.number}"

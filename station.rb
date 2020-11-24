@@ -20,6 +20,7 @@ class Station
     register_instance
   end
 
+  #Метод, принимающий блок
   def operation_with_trains(&block)
     @trains.each(&block)
   end

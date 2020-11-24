@@ -24,7 +24,8 @@ class Train
     @@trains.merge!({ name => self })
     register_instance
   end
-
+  
+  #Метод, принимающий блок
   def operation_with_wagons(&block)
     @wagons.each(&block)
   end

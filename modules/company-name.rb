@@ -7,6 +7,5 @@ module CompanyName
 
   def set_company
     @company = gets.chomp
-    raise if @company !~ COMPANY_PATTERN
   end
 end

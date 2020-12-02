@@ -2,6 +2,8 @@
 
 require_relative 'main'
 require './modules/instance-counter'
+require './modules/validation'
+require './modules/accessors'
 
 class Station
   attr_accessor :trains, :name, :type
@@ -9,6 +11,10 @@ class Station
   STATION_PATTERN = /^[A-Z]{1}+[a-z]{1,}$/.freeze
 
   include InstanceCounter
+  include Validation
+  extend Accessors
+
+  validate :@name, :format, STATION_PATTERN
 
   @@all_stations = []
 
@@ -20,13 +26,8 @@ class Station
     register_instance
   end
 
-  # Метод, принимающий блок
   def operation_with_trains(&block)
     @trains.each(&block)
-  end
-
-  def validate!
-    raise if @name !~ STATION_PATTERN
   end
 
   def show_type_trains(type)

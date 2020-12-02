@@ -10,6 +10,7 @@ require_relative 'wagon_pass'
 require_relative 'wagon_cargo'
 require './modules/instance-counter'
 require './modules/company-name'
+require './modules/validation'
 
 class Interface
   attr_reader :trains, :stations, :routes, :wagons
@@ -131,8 +132,8 @@ class Interface
         name = gets.chomp
       end
       stations.merge!({ name => Station.new(name) })
-    rescue RuntimeError
-      puts 'Название станции должно состоять только из латинских букв и начинаться с заглавной'
+    rescue Exception => e
+      puts "#{e.class} happened: #{e.message}"
       retry
     end
     create_an_object
@@ -185,8 +186,8 @@ class Interface
       else
         @routes.merge!({ new_route_name => Route.new(station_one, station_two, new_route_name) })
       end
-    rescue RuntimeError
-      puts 'Название маршрута должно состоять только из латинских букв и начинаться с заглавной'
+    rescue Exception => e
+      puts "#{e.class} happened: #{e.message}"
       retry
     end
   end
@@ -231,8 +232,8 @@ class Interface
         trains.merge!({ name => PassengerTrain.new(name) })
         company(name, :train)
       end
-    rescue RuntimeError
-      puts 'Неверно указан номер поезда. Допустимый формат: три буквы или цифры в любом порядке, необязательный дефис (может быть, а может нет) и еще 2 буквы или цифры после дефиса. '
+    rescue Exception => e
+      puts "#{e.class} happened: #{e.message}"
       retry
     end
     puts "\n Создан поезд №#{name} компании '#{trains[name].company}'"
@@ -243,16 +244,20 @@ class Interface
     case type
     when :train
       trains[name].set_company
+      trains[name].class.validate :@company, :format, CompanyName.const_get(:COMPANY_PATTERN)
+      trains[name].validate!
     when :wagon
       wagons[name].set_company
+      wagons[name].class.validate :@company, :format, CompanyName.const_get(:COMPANY_PATTERN)
+      wagons[name].validate!
     end
-  rescue RuntimeError
-    puts 'Название компании должно состоять только из латинских букв и начинаться с заглавной'
+  rescue Exception => e
+    puts "#{e.class} happened: #{e.message}"
     retry
   end
 
   def volume_valid!(volume)
-    raise if volume.zero?
+    raise 'Объем должен быть больше нуля' if volume.zero?
   end
 
   # Указание максимального объема/мест при создании
@@ -267,8 +272,8 @@ class Interface
         volume = gets.chomp.to_i
         volume_valid!(volume)
       end
-    rescue StandardError
-      puts 'Неверно указан  объем вагона (целое/дробное число для грузового, и целове - для пассажирского)'
+    rescue Exception => e
+      puts "#{e.class} happened: Неверно указан объем / количество мест"
       retry
     end
     volume
@@ -283,7 +288,6 @@ class Interface
     end
   end
 
-  # Занять объем/место в вагоне
   def take_volume(wagon)
     if wagon.type == :cargo
       puts 'Введтие количество занимаемого объема'
@@ -294,7 +298,6 @@ class Interface
     end
   end
 
-  # При создании указывается количество мест или объем
   def create_wagon(type)
     begin
       puts 'Введите номер вагона'
@@ -312,8 +315,8 @@ class Interface
         wagons.merge!({ number => PassengerWagon.new(number, volume) })
         company(number, :wagon)
       end
-    rescue RuntimeError
-      puts 'Неверно указан номер вагона. Допустимый формат: две цифры.'
+    rescue Exception => e
+      puts "#{e.class} happened: #{e.message}"
       retry
     end
     puts "\n Создан вагон №#{number} компании '#{wagons[number].company}'"
@@ -422,7 +425,6 @@ class Interface
     end
   end
 
-  # Вывод списка поездов и прицепленных к ним вагонов на станции
   def trains_on_station
     puts 'Введите название станции'
     station_name = gets.chomp
@@ -567,7 +569,6 @@ class Interface
     end
   end
 
-  # Вывод списка вагонов у поезда
   def show_wagons(train)
     train.operation_with_wagons do |wagon|
       puts "Номер вагона - #{wagon.number}"

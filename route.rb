@@ -2,24 +2,25 @@
 
 require_relative 'main'
 require './modules/instance-counter'
+require './modules/validation'
+require './modules/accessors'
 
 class Route
-  attr_accessor :stations
-  attr_reader :name
+  attr_accessor :stations, :name
 
   ROUTE_PATTERN = /^[A-Z]{1}+[a-z]{1,}$/.freeze
 
   include InstanceCounter
+  include Validation
+  extend Accessors
+
+  validate :@name, :format, ROUTE_PATTERN
 
   def initialize(first, terminal, name)
     @stations = [first, terminal]
     @name = name
     validate!
     register_instance
-  end
-
-  def validate!
-    raise if @name !~ ROUTE_PATTERN
   end
 
   def add_station(station)

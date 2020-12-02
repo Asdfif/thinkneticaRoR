@@ -2,10 +2,15 @@
 
 require_relative 'main'
 require './modules/company-name'
+require './modules/validation'
 
 class CargoWagon < Wagon
+  include Validation
+
   attr_reader :type
 
+  WAGON_PATTERN = /^\d{2}$/.freeze
+  validate :@number, :format, WAGON_PATTERN
   def initialize(number, volume)
     super
     @type = :cargo
